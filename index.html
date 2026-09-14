@@ -163,6 +163,12 @@
     margin: 0;
   }
   .result-bar .year{ color: var(--brass); font-weight: 700; }
+  .result-bar .location{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 4px 0 0;
+    font-style: italic;
+  }
   .result-bar .info{
     font-size: 11px;
     color: var(--ink-soft);
@@ -244,6 +250,7 @@
       <p class="verdict" id="verdict"></p>
       <p class="details"><span id="rTitle"></span> — <span class="year" id="rYear"></span></p>
       <p class="info" id="rInfo"></p>
+      <p class="location" id="rLocation"></p>
     </div>
 
     <div class="continue-wrap" id="continueWrap"></div>
@@ -256,36 +263,36 @@
 
 <script>
 const ARTWORKS = [
-  { title:"Arnolfini Portrait", artist:"Jan van Eyck", year:1434, info:"A richly detailed double portrait long debated for the meaning of its symbolism.", wikiTitle:"Arnolfini Portrait" },
-  { title:"The Birth of Venus", artist:"Sandro Botticelli", year:1485, info:"Depicts the goddess Venus arriving at the shore after her birth from the sea.", wikiTitle:"The Birth of Venus" },
-  { title:"The Last Supper", artist:"Leonardo da Vinci", year:1498, info:"A mural depicting the moment Jesus announces one of his disciples will betray him.", wikiTitle:"The Last Supper (Leonardo)" },
-  { title:"Mona Lisa", artist:"Leonardo da Vinci", year:1503, info:"Likely a portrait of Lisa Gherardini, wife of a Florentine merchant.", wikiTitle:"Mona Lisa" },
-  { title:"The School of Athens", artist:"Raphael", year:1511, info:"A fresco gathering ancient philosophers, with Plato and Aristotle at its center.", wikiTitle:"The School of Athens" },
-  { title:"The Creation of Adam", artist:"Michelangelo", year:1512, info:"A fresco on the ceiling of the Sistine Chapel, one of the most referenced images in Western art.", wikiTitle:"The Creation of Adam" },
-  { title:"The Calling of Saint Matthew", artist:"Caravaggio", year:1600, info:"Uses a dramatic beam of light to single out Matthew at the moment he is called.", wikiTitle:"The Calling of Saint Matthew" },
-  { title:"Las Meninas", artist:"Diego Velázquez", year:1656, info:"A complex composition that plays with perspective, showing the painter at work in the Spanish court.", wikiTitle:"Las Meninas" },
-  { title:"The Night Watch", artist:"Rembrandt", year:1642, info:"A group portrait of a militia company, famous for its dramatic use of light and shadow.", wikiTitle:"The Night Watch" },
-  { title:"Girl with a Pearl Earring", artist:"Johannes Vermeer", year:1665, info:"Sometimes called the 'Mona Lisa of the North' for its enigmatic gaze.", wikiTitle:"Girl with a Pearl Earring" },
-  { title:"The Swing", artist:"Jean-Honoré Fragonard", year:1767, info:"A playful Rococo scene of a young woman on a swing, watched by an admirer hidden in the bushes.", wikiTitle:"The Swing (Fragonard)" },
-  { title:"The Raft of the Medusa", artist:"Théodore Géricault", year:1819, info:"Depicts the aftermath of a shipwreck, based on a real and controversial disaster.", wikiTitle:"The Raft of the Medusa" },
-  { title:"Liberty Leading the People", artist:"Eugène Delacroix", year:1830, info:"Commemorates the July Revolution of 1830 in France, with Liberty personified carrying the flag.", wikiTitle:"Liberty Leading the People" },
-  { title:"The Great Wave off Kanagawa", artist:"Katsushika Hokusai", year:1831, info:"A woodblock print from a series depicting Mount Fuji from different viewpoints.", wikiTitle:"The Great Wave off Kanagawa" },
-  { title:"Olympia", artist:"Édouard Manet", year:1863, info:"A reclining nude that scandalized audiences for its confrontational, modern subject.", wikiTitle:"Olympia (Manet)" },
-  { title:"Impression, Sunrise", artist:"Claude Monet", year:1872, info:"The painting that gave the Impressionist movement its name.", wikiTitle:"Impression, Sunrise" },
-  { title:"A Sunday on La Grande Jatte", artist:"Georges Seurat", year:1886, info:"Built entirely from tiny dots of color, a landmark of the Pointillist technique.", wikiTitle:"A Sunday Afternoon on the Island of La Grande Jatte" },
-  { title:"The Starry Night", artist:"Vincent van Gogh", year:1889, info:"Painted from memory at an asylum in Saint-Rémy, looking out at the view before dawn.", wikiTitle:"The Starry Night" },
-  { title:"The Scream", artist:"Edvard Munch", year:1893, info:"Munch described the inspiration as a sudden feeling passing through nature.", wikiTitle:"The Scream" },
-  { title:"The Kiss", artist:"Gustav Klimt", year:1908, info:"Part of Klimt's 'Golden Phase', decorated with real gold leaf.", wikiTitle:"The Kiss (Klimt)" },
-  { title:"The Persistence of Memory", artist:"Salvador Dalí", year:1931, info:"Its melting clocks have become one of the most recognizable images of Surrealism.", wikiTitle:"The Persistence of Memory" },
-  { title:"American Gothic", artist:"Grant Wood", year:1930, info:"The models were the artist's sister and his dentist, not a real married couple.", wikiTitle:"American Gothic" },
-  { title:"Guernica", artist:"Pablo Picasso", year:1937, info:"A monumental protest against the bombing of a Basque town during the Spanish Civil War.", wikiTitle:"Guernica (Picasso)" },
-  { title:"Nighthawks", artist:"Edward Hopper", year:1942, info:"Depicts a late-night diner in an almost empty city street, evoking urban isolation.", wikiTitle:"Nighthawks (painting)" },
-  { title:"Christina's World", artist:"Andrew Wyeth", year:1948, info:"Shows a woman in a field looking toward a distant farmhouse, based on a neighbor with a physical disability.", wikiTitle:"Christina's World" },
-  { title:"No. 5, 1948", artist:"Jackson Pollock", year:1948, info:"An early example of Pollock's signature drip technique, built up in dense layers of paint.", wikiTitle:"No. 5, 1948" },
-  { title:"The Son of Man", artist:"René Magritte", year:1964, info:"A self-portrait where the subject's face is obscured by a floating green apple.", wikiTitle:"The Son of Man" },
-  { title:"Marilyn Diptych", artist:"Andy Warhol", year:1962, info:"Repeats a single publicity photo of Marilyn Monroe in rows of fading, silkscreened color.", wikiTitle:"Marilyn Diptych" },
-  { title:"One: Number 31, 1950", artist:"Jackson Pollock", year:1950, info:"A large-scale drip painting made by pouring paint directly onto canvas laid on the floor.", wikiTitle:"One: Number 31, 1950" },
-  { title:"Woman I", artist:"Willem de Kooning", year:1952, info:"Part of a series that reimagines the female figure through aggressive, gestural brushwork.", wikiTitle:"Woman I" }
+  { title:"Arnolfini Portrait", artist:"Jan van Eyck", year:1434, info:"A richly detailed double portrait long debated for the meaning of its symbolism.", location:"The National Gallery, London", image:"images/arnolfini-portrait.jpg", wikiTitle:"Arnolfini Portrait" },
+  { title:"The Birth of Venus", artist:"Sandro Botticelli", year:1485, info:"Depicts the goddess Venus arriving at the shore after her birth from the sea.", location:"Uffizi Gallery, Florence", image:"images/the-birth-of-venus.jpg", wikiTitle:"The Birth of Venus" },
+  { title:"The Last Supper", artist:"Leonardo da Vinci", year:1498, info:"A mural depicting the moment Jesus announces one of his disciples will betray him.", location:"Santa Maria delle Grazie, Milan", image:"images/the-last-supper.jpg", wikiTitle:"The Last Supper (Leonardo)" },
+  { title:"Mona Lisa", artist:"Leonardo da Vinci", year:1503, info:"Likely a portrait of Lisa Gherardini, wife of a Florentine merchant.", location:"The Louvre, Paris", image:"images/mona-lisa.jpg", wikiTitle:"Mona Lisa" },
+  { title:"The School of Athens", artist:"Raphael", year:1511, info:"A fresco gathering ancient philosophers, with Plato and Aristotle at its center.", location:"Apostolic Palace, Vatican City", image:"images/the-school-of-athens.jpg", wikiTitle:"The School of Athens" },
+  { title:"The Creation of Adam", artist:"Michelangelo", year:1512, info:"A fresco on the ceiling of the Sistine Chapel, one of the most referenced images in Western art.", location:"Sistine Chapel, Vatican City", image:"images/the-creation-of-adam.jpg", wikiTitle:"The Creation of Adam" },
+  { title:"The Calling of Saint Matthew", artist:"Caravaggio", year:1600, info:"Uses a dramatic beam of light to single out Matthew at the moment he is called.", location:"San Luigi dei Francesi, Rome", image:"images/the-calling-of-saint-matthew.jpg", wikiTitle:"The Calling of Saint Matthew" },
+  { title:"Las Meninas", artist:"Diego Velázquez", year:1656, info:"A complex composition that plays with perspective, showing the painter at work in the Spanish court.", location:"Museo del Prado, Madrid", image:"images/las-meninas.jpg", wikiTitle:"Las Meninas" },
+  { title:"The Night Watch", artist:"Rembrandt", year:1642, info:"A group portrait of a militia company, famous for its dramatic use of light and shadow.", location:"Rijksmuseum, Amsterdam", image:"images/the-night-watch.jpg", wikiTitle:"The Night Watch" },
+  { title:"Girl with a Pearl Earring", artist:"Johannes Vermeer", year:1665, info:"Sometimes called the 'Mona Lisa of the North' for its enigmatic gaze.", location:"Mauritshuis, The Hague", image:"images/girl-with-a-pearl-earring.jpg", wikiTitle:"Girl with a Pearl Earring" },
+  { title:"The Swing", artist:"Jean-Honoré Fragonard", year:1767, info:"A playful Rococo scene of a young woman on a swing, watched by an admirer hidden in the bushes.", location:"Wallace Collection, London", image:"images/the-swing.jpg", wikiTitle:"The Swing (Fragonard)" },
+  { title:"The Raft of the Medusa", artist:"Théodore Géricault", year:1819, info:"Depicts the aftermath of a shipwreck, based on a real and controversial disaster.", location:"The Louvre, Paris", image:"images/the-raft-of-the-medusa.jpg", wikiTitle:"The Raft of the Medusa" },
+  { title:"Liberty Leading the People", artist:"Eugène Delacroix", year:1830, info:"Commemorates the July Revolution of 1830 in France, with Liberty personified carrying the flag.", location:"The Louvre, Paris", image:"images/liberty-leading-the-people.jpg", wikiTitle:"Liberty Leading the People" },
+  { title:"The Great Wave off Kanagawa", artist:"Katsushika Hokusai", year:1831, info:"A woodblock print from a series depicting Mount Fuji from different viewpoints.", location:"Held in multiple collections worldwide, incl. The Met, New York", image:"images/the-great-wave-off-kanagawa.jpg", wikiTitle:"The Great Wave off Kanagawa" },
+  { title:"Olympia", artist:"Édouard Manet", year:1863, info:"A reclining nude that scandalized audiences for its confrontational, modern subject.", location:"Musée d'Orsay, Paris", image:"images/olympia.jpg", wikiTitle:"Olympia (Manet)" },
+  { title:"Impression, Sunrise", artist:"Claude Monet", year:1872, info:"The painting that gave the Impressionist movement its name.", location:"Musée Marmottan Monet, Paris", image:"images/impression-sunrise.jpg", wikiTitle:"Impression, Sunrise" },
+  { title:"A Sunday on La Grande Jatte", artist:"Georges Seurat", year:1886, info:"Built entirely from tiny dots of color, a landmark of the Pointillist technique.", location:"Art Institute of Chicago", image:"images/a-sunday-on-la-grande-jatte.jpg", wikiTitle:"A Sunday Afternoon on the Island of La Grande Jatte" },
+  { title:"The Starry Night", artist:"Vincent van Gogh", year:1889, info:"Painted from memory at an asylum in Saint-Rémy, looking out at the view before dawn.", location:"Museum of Modern Art (MoMA), New York", image:"images/the-starry-night.jpg", wikiTitle:"The Starry Night" },
+  { title:"The Scream", artist:"Edvard Munch", year:1893, info:"Munch described the inspiration as a sudden feeling passing through nature.", location:"National Museum of Norway, Oslo", image:"images/the-scream.jpg", wikiTitle:"The Scream" },
+  { title:"The Kiss", artist:"Gustav Klimt", year:1908, info:"Part of Klimt's 'Golden Phase', decorated with real gold leaf.", location:"Belvedere, Vienna", image:"images/the-kiss.jpg", wikiTitle:"The Kiss (Klimt)" },
+  { title:"The Persistence of Memory", artist:"Salvador Dalí", year:1931, info:"Its melting clocks have become one of the most recognizable images of Surrealism.", location:"Museum of Modern Art (MoMA), New York", image:"images/the-persistence-of-memory.jpg", wikiTitle:"The Persistence of Memory" },
+  { title:"American Gothic", artist:"Grant Wood", year:1930, info:"The models were the artist's sister and his dentist, not a real married couple.", location:"Art Institute of Chicago", image:"images/american-gothic.jpg", wikiTitle:"American Gothic" },
+  { title:"Guernica", artist:"Pablo Picasso", year:1937, info:"A monumental protest against the bombing of a Basque town during the Spanish Civil War.", location:"Museo Reina Sofía, Madrid", image:"images/guernica.jpg", wikiTitle:"Guernica (Picasso)" },
+  { title:"Nighthawks", artist:"Edward Hopper", year:1942, info:"Depicts a late-night diner in an almost empty city street, evoking urban isolation.", location:"Art Institute of Chicago", image:"images/nighthawks.jpg", wikiTitle:"Nighthawks (painting)" },
+  { title:"Christina's World", artist:"Andrew Wyeth", year:1948, info:"Shows a woman in a field looking toward a distant farmhouse, based on a neighbor with a physical disability.", location:"Museum of Modern Art (MoMA), New York", image:"images/christina-s-world.jpg", wikiTitle:"Christina's World" },
+  { title:"No. 5, 1948", artist:"Jackson Pollock", year:1948, info:"An early example of Pollock's signature drip technique, built up in dense layers of paint.", location:"Private collection", image:"images/no-5-1948.jpg", wikiTitle:"No. 5, 1948" },
+  { title:"The Son of Man", artist:"René Magritte", year:1964, info:"A self-portrait where the subject's face is obscured by a floating green apple.", location:"Private collection", image:"images/the-son-of-man.jpg", wikiTitle:"The Son of Man" },
+  { title:"Marilyn Diptych", artist:"Andy Warhol", year:1962, info:"Repeats a single publicity photo of Marilyn Monroe in rows of fading, silkscreened color.", location:"Tate, London", image:"images/marilyn-diptych.jpg", wikiTitle:"Marilyn Diptych" },
+  { title:"One: Number 31, 1950", artist:"Jackson Pollock", year:1950, info:"A large-scale drip painting made by pouring paint directly onto canvas laid on the floor.", location:"Museum of Modern Art (MoMA), New York", image:"images/one-number-31-1950.jpg", wikiTitle:"One: Number 31, 1950" },
+  { title:"Woman I", artist:"Willem de Kooning", year:1952, info:"Part of a series that reimagines the female figure through aggressive, gestural brushwork.", location:"Museum of Modern Art (MoMA), New York", image:"images/woman-i.jpg", wikiTitle:"Woman I" }
 ];
 
 const imageCache = {};
@@ -313,8 +320,9 @@ async function fetchWikiImage(wikiTitle){
 
 let deck = [];
 let currentArt = null;
-let streak = 0;
+let streak = parseInt(localStorage.getItem("wpt_streak") || "0", 10);
 let best = parseInt(localStorage.getItem("wpt_best") || "0", 10);
+document.getElementById("streakNum").textContent = streak;
 document.getElementById("bestNum").textContent = best;
 
 function shuffledDeck(){
@@ -358,10 +366,6 @@ async function startRound(){
   const img = document.getElementById("artImg");
   const fallback = document.getElementById("artFallback");
 
-  img.style.display = "none";
-  fallback.style.display = "flex";
-  fallback.innerHTML = "Loading painting…";
-
   const opts = pickOptions(currentArt);
   const optionsDiv = document.getElementById("options");
   optionsDiv.innerHTML = "";
@@ -376,10 +380,16 @@ async function startRound(){
   document.getElementById("resultBar").classList.remove("show");
   document.getElementById("continueWrap").innerHTML = "";
 
-  const src = await fetchWikiImage(thisRoundArt.wikiTitle);
-  if(currentArt !== thisRoundArt) return; // a newer round started while we were fetching
+  img.style.display = "none";
+  fallback.style.display = "flex";
+  fallback.innerHTML = "Loading painting…";
 
-  if(src){
+  const showFinal = (finalSrc) => {
+    if(currentArt !== thisRoundArt) return;
+    if(!finalSrc){
+      fallback.innerHTML = "No image available<br><span style=\"opacity:0.7;font-size:12px\">" + thisRoundArt.title + "</span>";
+      return;
+    }
     img.onerror = function(){
       img.style.display = "none";
       fallback.style.display = "flex";
@@ -390,10 +400,18 @@ async function startRound(){
       fallback.style.display = "none";
     };
     img.alt = "Untitled painting to identify";
-    img.src = src;
-  } else {
-    fallback.innerHTML = "No image available<br><span style=\"opacity:0.7;font-size:12px\">" + thisRoundArt.title + "</span>";
-  }
+    img.src = finalSrc;
+  };
+
+  // Try the local image first — instant, no network round trip.
+  const probe = new Image();
+  probe.onload = () => showFinal(thisRoundArt.image);
+  probe.onerror = async () => {
+    if(currentArt !== thisRoundArt) return;
+    const src = await fetchWikiImage(thisRoundArt.wikiTitle);
+    showFinal(src);
+  };
+  probe.src = thisRoundArt.image;
 }
 
 function onGuess(chosenName, btnEl){
@@ -414,6 +432,7 @@ function onGuess(chosenName, btnEl){
   } else {
     streak = 0;
   }
+  localStorage.setItem("wpt_streak", streak);
   document.getElementById("streakNum").textContent = streak;
 
   const verdict = document.getElementById("verdict");
@@ -421,6 +440,7 @@ function onGuess(chosenName, btnEl){
   verdict.className = "verdict " + (correct ? "correct-text" : "wrong-text");
   document.getElementById("rTitle").textContent = currentArt.title;
   document.getElementById("rYear").textContent = currentArt.year;
+  document.getElementById("rLocation").textContent = "📍 " + currentArt.location;
   document.getElementById("rInfo").textContent = currentArt.info;
   document.getElementById("resultBar").classList.add("show");
 
