@@ -326,7 +326,6 @@
       </div>
     </div>
 
-    <div class="prompt" id="promptText">Who painted this?</div>
 
     <div class="options" id="options"></div>
 
@@ -409,7 +408,7 @@ const TRANSLATIONS = {
       "subtitle": "Одна картина, чотири імені. Оберіть автора.",
       "streakLabel": "СЕРІЯ",
       "bestLabel": "РЕКОРД",
-      "prompt": "Хто намалював цю картину?",
+      "prompt": "Оберіть автора картини:",
       "correct": "Правильно.",
       "incorrect": "Не зовсім.",
       "next": "Наступна картина →",
@@ -629,7 +628,6 @@ function applyStaticText(){
   document.getElementById("subText").textContent = t("subtitle");
   document.getElementById("streakLabel").textContent = t("streakLabel");
   document.getElementById("bestLabel").textContent = t("bestLabel");
-  document.getElementById("promptText").textContent = t("prompt");
   document.querySelector("footer").textContent = t("footer");
   document.documentElement.lang = currentLang === "ua" ? "uk" : "en";
 }
