@@ -195,6 +195,85 @@
     display:none;
   }
 
+  .lang-switcher{
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 60;
+    display:flex;
+    gap: 4px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 6px;
+    padding: 4px;
+  }
+  .lang-btn{
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size: 12px;
+    background: transparent;
+    color: #C9C4B4;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .lang-btn:hover{ color: #fff; }
+  .lang-btn.active{
+    background: var(--brass);
+    color: #211F1A;
+  }
+
+  .milestone-overlay{
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 50;
+    transform: translateY(140%);
+    opacity: 0;
+    transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+    pointer-events: none;
+  }
+  .milestone-overlay.show{
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .milestone-overlay.exit{
+    transform: translateY(-140%);
+    opacity: 0;
+    transition: transform 0.4s ease-in, opacity 0.4s ease-in;
+    pointer-events: none;
+  }
+  .milestone-card{
+    background: transparent;
+    padding: 0;
+    width: 220px;
+    text-align:center;
+  }
+  .milestone-img{
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    border-radius: 10px;
+    display:block;
+    margin-bottom: 10px;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.5);
+  }
+  .milestone-text{
+    font-family:'Fraunces', serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--plaster);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    margin: 0 0 10px;
+  }
+  .milestone-card .next-btn{
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
   @media (max-width: 820px){
     body{ height:auto; overflow:auto; padding: 28px 16px 48px; }
     .layout{ flex-direction: column; gap: 24px; }
@@ -215,6 +294,11 @@
 </head>
 <body>
 
+<div class="lang-switcher" id="langSwitcher">
+  <button class="lang-btn active" id="langEnBtn" data-lang="en">EN</button>
+  <button class="lang-btn" id="langUaBtn" data-lang="ua">UA</button>
+</div>
+
 <div class="layout">
   <div class="right-col">
     <div class="frame">
@@ -227,22 +311,22 @@
 
   <div class="left-col">
     <header>
-      <h1>Who Painted This?</h1>
-      <p class="sub">One painting, four names. Pick the artist who made it.</p>
+      <h1 id="mainTitle">Who Painted This?</h1>
+      <p class="sub" id="subText">One painting, four names. Pick the artist who made it.</p>
     </header>
 
     <div class="scorebar">
       <div class="score-item">
         <span class="score-num" id="streakNum">0</span>
-        <span class="score-label">STREAK</span>
+        <span class="score-label" id="streakLabel">STREAK</span>
       </div>
       <div class="score-item">
         <span class="score-num" id="bestNum">0</span>
-        <span class="score-label">BEST</span>
+        <span class="score-label" id="bestLabel">BEST</span>
       </div>
     </div>
 
-    <div class="prompt">Who painted this?</div>
+    <div class="prompt" id="promptText">Who painted this?</div>
 
     <div class="options" id="options"></div>
 
@@ -254,6 +338,14 @@
     </div>
 
     <div class="continue-wrap" id="continueWrap"></div>
+  </div>
+</div>
+
+<div class="milestone-overlay" id="milestoneOverlay">
+  <div class="milestone-card">
+    <img id="milestoneImg" src="" alt="" class="milestone-img" />
+    <p class="milestone-text" id="milestoneText"></p>
+    <button class="next-btn" id="milestoneBtn"></button>
   </div>
 </div>
 
@@ -295,10 +387,292 @@ const ARTWORKS = [
   { title:"Woman I", artist:"Willem de Kooning", year:1952, info:"Part of a series that reimagines the female figure through aggressive, gestural brushwork.", location:"Museum of Modern Art (MoMA), New York", image:"images/woman-i.jpg", wikiTitle:"Woman I" }
 ];
 
+const TRANSLATIONS = {
+  "en": {
+    "ui": {
+      "title": "Who Painted This?",
+      "subtitle": "One painting, four names. Pick the artist who made it.",
+      "streakLabel": "STREAK",
+      "bestLabel": "BEST",
+      "prompt": "Who painted this?",
+      "correct": "Correct.",
+      "incorrect": "Not quite.",
+      "next": "Next painting →",
+      "playAgain": "Play again",
+      "footer": "Artwork years and details reflect widely documented art-historical records. Images are sourced from Wikipedia and stored locally in this project.",
+      "noImage": "No image available"
+    }
+  },
+  "ua": {
+    "ui": {
+      "title": "Хто намалював цю картину?",
+      "subtitle": "Одна картина, чотири імені. Оберіть автора.",
+      "streakLabel": "СЕРІЯ",
+      "bestLabel": "РЕКОРД",
+      "prompt": "Хто намалював цю картину?",
+      "correct": "Правильно.",
+      "incorrect": "Не зовсім.",
+      "next": "Наступна картина →",
+      "playAgain": "Грати знову",
+      "footer": "Роки та деталі картин відповідають загальновідомим мистецтвознавчим джерелам. Зображення взято з Вікіпедії та збережені локально в цьому проєкті.",
+      "noImage": "Зображення недоступне"
+    },
+    "artworks": [
+      {
+        "title": "Портрет подружжя Арнольфіні",
+        "artist": "Ян ван Ейк",
+        "info": "Детальний подвійний портрет, символіка якого досі викликає дискусії.",
+        "location": "Національна галерея, Лондон"
+      },
+      {
+        "title": "Народження Венери",
+        "artist": "Сандро Боттічеллі",
+        "info": "Зображує богиню Венеру, яка прибуває до берега після свого народження з моря.",
+        "location": "Галерея Уффіці, Флоренція"
+      },
+      {
+        "title": "Тайна вечеря",
+        "artist": "Леонардо да Вінчі",
+        "info": "Фреска, що зображує момент, коли Ісус повідомляє про зраду одного з учнів.",
+        "location": "Санта-Марія-делле-Ґраціе, Мілан"
+      },
+      {
+        "title": "Мона Ліза",
+        "artist": "Леонардо да Вінчі",
+        "info": "Ймовірно, портрет Лізи Герардіні, дружини флорентійського купця.",
+        "location": "Лувр, Париж"
+      },
+      {
+        "title": "Афінська школа",
+        "artist": "Рафаель",
+        "info": "Фреска, що об'єднує античних філософів, у центрі якої Платон та Арістотель.",
+        "location": "Апостольський палац, Ватикан"
+      },
+      {
+        "title": "Створення Адама",
+        "artist": "Мікеланджело",
+        "info": "Фреска на стелі Сікстинської капели, один з найбільш впізнаваних образів західного мистецтва.",
+        "location": "Сікстинська капела, Ватикан"
+      },
+      {
+        "title": "Покликання апостола Матвія",
+        "artist": "Караваджо",
+        "info": "Драматичний промінь світла виділяє Матвія в момент його покликання.",
+        "location": "Церква Сан-Луїджі-деї-Франчезі, Рим"
+      },
+      {
+        "title": "Меніни",
+        "artist": "Дієго Веласкес",
+        "info": "Складна композиція, що грає з перспективою, зображуючи художника за роботою при іспанському дворі.",
+        "location": "Музей Прадо, Мадрид"
+      },
+      {
+        "title": "Нічна варта",
+        "artist": "Рембрандт",
+        "info": "Груповий портрет ополчення, відомий драматичним використанням світла і тіні.",
+        "location": "Рейксмузеум, Амстердам"
+      },
+      {
+        "title": "Дівчина з перловою сережкою",
+        "artist": "Ян Вермеєр",
+        "info": "Іноді її називають «Мона Лізою Півночі» за загадковий погляд.",
+        "location": "Маурітсхейс, Гаага"
+      },
+      {
+        "title": "Гойдалка",
+        "artist": "Жан-Оноре Фрагонар",
+        "info": "Грайлива сцена в стилі рококо із дівчиною на гойдалці, за якою спостерігає прихований шанувальник.",
+        "location": "Колекція Воллеса, Лондон"
+      },
+      {
+        "title": "Пліт «Медузи»",
+        "artist": "Теодор Жеріко",
+        "info": "Зображує наслідки корабельної катастрофи, засновані на реальній і скандальній трагедії.",
+        "location": "Лувр, Париж"
+      },
+      {
+        "title": "Свобода, що веде народ",
+        "artist": "Ежен Делакруа",
+        "info": "Присвячена Липневій революції 1830 року у Франції, де Свобода уособлена жінкою з прапором.",
+        "location": "Лувр, Париж"
+      },
+      {
+        "title": "Велика хвиля в Канаґаві",
+        "artist": "Кацусіка Хокусай",
+        "info": "Гравюра з серії, що зображує гору Фудзі з різних ракурсів.",
+        "location": "Зберігається в багатьох музеях світу, зокрема в Метрополітен-музеї, Нью-Йорк"
+      },
+      {
+        "title": "Олімпія",
+        "artist": "Едуар Мане",
+        "info": "Зображення оголеної жінки, яке шокувало публіку своєю відвертою сучасністю.",
+        "location": "Музей Орсе, Париж"
+      },
+      {
+        "title": "Враження. Схід сонця",
+        "artist": "Клод Моне",
+        "info": "Картина, яка дала назву імпресіонізму.",
+        "location": "Музей Мармоттан-Моне, Париж"
+      },
+      {
+        "title": "Недільний день на острові Гранд-Жатт",
+        "artist": "Жорж Сера",
+        "info": "Створена повністю з дрібних кольорових крапок — знакова робота пуантилізму.",
+        "location": "Художній інститут Чикаго"
+      },
+      {
+        "title": "Зоряна ніч",
+        "artist": "Вінсент ван Гог",
+        "info": "Написана з пам'яті в притулку в Сен-Ремі, під час погляду на краєвид перед світанком.",
+        "location": "Музей сучасного мистецтва (MoMA), Нью-Йорк"
+      },
+      {
+        "title": "Крик",
+        "artist": "Едвард Мунк",
+        "info": "Мунк описував натхнення як раптове відчуття крику, що проходить крізь природу.",
+        "location": "Національний музей Норвегії, Осло"
+      },
+      {
+        "title": "Поцілунок",
+        "artist": "Густав Клімт",
+        "info": "Частина «золотого періоду» Клімта, прикрашена справжнім золотим листям.",
+        "location": "Бельведер, Відень"
+      },
+      {
+        "title": "Сталість пам'яті",
+        "artist": "Сальвадор Далі",
+        "info": "Плавлені годинники стали одним із найвпізнаваніших образів сюрреалізму.",
+        "location": "Музей сучасного мистецтва (MoMA), Нью-Йорк"
+      },
+      {
+        "title": "Американська готика",
+        "artist": "Грант Вуд",
+        "info": "Моделями були сестра художника та його стоматолог, а не подружжя.",
+        "location": "Художній інститут Чикаго"
+      },
+      {
+        "title": "Герніка",
+        "artist": "Пабло Пікассо",
+        "info": "Монументальний протест проти бомбардування баскського містечка під час громадянської війни в Іспанії.",
+        "location": "Музей Рейна Софія, Мадрид"
+      },
+      {
+        "title": "Нічні яструби",
+        "artist": "Едвард Гоппер",
+        "info": "Зображує нічну закусочну на майже порожній вулиці, передаючи відчуття міської самотності.",
+        "location": "Художній інститут Чикаго"
+      },
+      {
+        "title": "Світ Крістіни",
+        "artist": "Ендрю Ваєт",
+        "info": "Зображує жінку в полі, яка дивиться на віддалену ферму; прототипом була сусідка з фізичною інвалідністю.",
+        "location": "Музей сучасного мистецтва (MoMA), Нью-Йорк"
+      },
+      {
+        "title": "№5, 1948",
+        "artist": "Джексон Поллок",
+        "info": "Ранній приклад фірмової техніки Поллока — «дриппінгу», виконаний у щільних шарах фарби.",
+        "location": "Приватна колекція"
+      },
+      {
+        "title": "Син людський",
+        "artist": "Рене Магрітт",
+        "info": "Автопортрет, на якому обличчя приховане плаваючим зеленим яблуком.",
+        "location": "Приватна колекція"
+      },
+      {
+        "title": "Диптих Мерилін",
+        "artist": "Енді Воргол",
+        "info": "Повторює одне рекламне фото Мерилін Монро рядами кольору, що поступово згасає.",
+        "location": "Тейт, Лондон"
+      },
+      {
+        "title": "Номер 31, 1950",
+        "artist": "Джексон Поллок",
+        "info": "Масштабна картина у техніці дриппінгу, створена шляхом виливання фарби на полотно, розстелене на підлозі.",
+        "location": "Музей сучасного мистецтва (MoMA), Нью-Йорк"
+      },
+      {
+        "title": "Жінка I",
+        "artist": "Віллем де Кунінг",
+        "info": "Частина серії, що переосмислює жіночу фігуру через агресивні, жестові мазки пензля.",
+        "location": "Музей сучасного мистецтва (MoMA), Нью-Йорк"
+      }
+    ]
+  }
+};
+
 let deck = [];
 let currentArt = null;
+let milestoneTimeoutId = null;
+let currentLang = localStorage.getItem("wpt_lang") || "en";
+let currentOptionButtons = [];
+let lastContinueLabelKey = null;
+let lastGuessCorrect = null;
 let streak = parseInt(localStorage.getItem("wpt_streak") || "0", 10);
 let best = parseInt(localStorage.getItem("wpt_best") || "0", 10);
+
+function locArt(art, field){
+  if(currentLang === "ua"){
+    const idx = ARTWORKS.indexOf(art);
+    return TRANSLATIONS.ua.artworks[idx][field];
+  }
+  return art[field];
+}
+
+function t(key){
+  return TRANSLATIONS[currentLang].ui[key];
+}
+
+function applyStaticText(){
+  document.getElementById("mainTitle").textContent = t("title");
+  document.getElementById("subText").textContent = t("subtitle");
+  document.getElementById("streakLabel").textContent = t("streakLabel");
+  document.getElementById("bestLabel").textContent = t("bestLabel");
+  document.getElementById("promptText").textContent = t("prompt");
+  document.querySelector("footer").textContent = t("footer");
+  document.documentElement.lang = currentLang === "ua" ? "uk" : "en";
+}
+
+function setLanguage(lang){
+  currentLang = lang;
+  localStorage.setItem("wpt_lang", lang);
+  document.getElementById("langEnBtn").classList.toggle("active", lang === "en");
+  document.getElementById("langUaBtn").classList.toggle("active", lang === "ua");
+  applyStaticText();
+
+  // Relabel the current answer buttons without changing which painting is shown
+  currentOptionButtons.forEach(({btn, art}) => {
+    btn.textContent = locArt(art, "artist");
+  });
+
+  // If the image failed to load, refresh the fallback caption text
+  const fallback = document.getElementById("artFallback");
+  if(fallback.style.display !== "none" && currentArt){
+    fallback.innerHTML = t("noImage") + "<br><span style=\"opacity:0.7;font-size:12px\">" + locArt(currentArt, "title") + "</span>";
+  }
+  const img = document.getElementById("artImg");
+  if(img) img.alt = t("prompt");
+
+  // If a result is currently showing, refresh its text too
+  if(currentArt && lastGuessCorrect !== null){
+    const verdict = document.getElementById("verdict");
+    verdict.textContent = lastGuessCorrect ? t("correct") : t("incorrect");
+    document.getElementById("rTitle").textContent = locArt(currentArt, "title");
+    document.getElementById("rLocation").textContent = "📍 " + locArt(currentArt, "location");
+    document.getElementById("rInfo").textContent = locArt(currentArt, "info");
+  }
+
+  // Refresh the continue button label if one is showing
+  if(lastContinueLabelKey){
+    const continueBtn = document.querySelector("#continueWrap .next-btn");
+    if(continueBtn) continueBtn.textContent = t(lastContinueLabelKey);
+  }
+}
+
+document.getElementById("langEnBtn").addEventListener("click", () => setLanguage("en"));
+document.getElementById("langUaBtn").addEventListener("click", () => setLanguage("ua"));
+
 document.getElementById("streakNum").textContent = streak;
 document.getElementById("bestNum").textContent = best;
 
@@ -328,8 +702,8 @@ function pickOptions(correctArt){
     const j = Math.floor(Math.random() * (i+1));
     [others[i], others[j]] = [others[j], others[i]];
   }
-  const distractors = others.slice(0, 3).map(a => a.artist);
-  const opts = [...distractors, correctArt.artist];
+  const distractors = others.slice(0, 3);
+  const opts = [...distractors, correctArt];
   for(let i = opts.length - 1; i > 0; i--){
     const j = Math.floor(Math.random() * (i+1));
     [opts[i], opts[j]] = [opts[j], opts[i]];
@@ -346,13 +720,18 @@ function startRound(){
   const opts = pickOptions(currentArt);
   const optionsDiv = document.getElementById("options");
   optionsDiv.innerHTML = "";
-  opts.forEach(name => {
+  currentOptionButtons = [];
+  opts.forEach(art => {
     const btn = document.createElement("button");
     btn.className = "option-btn";
-    btn.textContent = name;
-    btn.onclick = () => onGuess(name, btn);
+    btn.textContent = locArt(art, "artist");
+    btn.onclick = () => onGuess(art, btn);
     optionsDiv.appendChild(btn);
+    currentOptionButtons.push({ btn, art });
   });
+
+  lastContinueLabelKey = null;
+  lastGuessCorrect = null;
 
   document.getElementById("resultBar").classList.remove("show");
   document.getElementById("continueWrap").innerHTML = "";
@@ -360,24 +739,24 @@ function startRound(){
   img.onerror = function(){
     img.style.display = "none";
     fallback.style.display = "flex";
-    fallback.innerHTML = "No image available<br><span style=\"opacity:0.7;font-size:12px\">" + thisRoundArt.title + "</span>";
+    fallback.innerHTML = t("noImage") + "<br><span style=\"opacity:0.7;font-size:12px\">" + locArt(thisRoundArt, "title") + "</span>";
   };
   img.onload = function(){
     img.style.display = "";
     fallback.style.display = "none";
   };
-  img.alt = "Untitled painting to identify";
+  img.alt = t("prompt");
   img.style.display = "";
   fallback.style.display = "none";
   img.src = thisRoundArt.image;
 }
 
-function onGuess(chosenName, btnEl){
-  const correct = chosenName === currentArt.artist;
-  document.querySelectorAll(".option-btn").forEach(b => {
-    b.disabled = true;
-    if(b.textContent === currentArt.artist) b.classList.add("correct");
-    else if(b === btnEl && !correct) b.classList.add("wrong");
+function onGuess(art, btnEl){
+  const correct = art === currentArt;
+  currentOptionButtons.forEach(({btn, art: a}) => {
+    btn.disabled = true;
+    if(a === currentArt) btn.classList.add("correct");
+    else if(btn === btnEl && !correct) btn.classList.add("wrong");
   });
 
   if(correct){
@@ -393,23 +772,97 @@ function onGuess(chosenName, btnEl){
   localStorage.setItem("wpt_streak", streak);
   document.getElementById("streakNum").textContent = streak;
 
+  lastGuessCorrect = correct;
+
   const verdict = document.getElementById("verdict");
-  verdict.textContent = correct ? "Correct." : "Not quite.";
+  verdict.textContent = correct ? t("correct") : t("incorrect");
   verdict.className = "verdict " + (correct ? "correct-text" : "wrong-text");
-  document.getElementById("rTitle").textContent = currentArt.title;
+  document.getElementById("rTitle").textContent = locArt(currentArt, "title");
   document.getElementById("rYear").textContent = currentArt.year;
-  document.getElementById("rLocation").textContent = "📍 " + currentArt.location;
-  document.getElementById("rInfo").textContent = currentArt.info;
+  document.getElementById("rLocation").textContent = "📍 " + locArt(currentArt, "location");
+  document.getElementById("rInfo").textContent = locArt(currentArt, "info");
   document.getElementById("resultBar").classList.add("show");
 
   const btn = document.createElement("button");
   btn.className = "next-btn";
-  btn.textContent = "Next painting →";
-  btn.onclick = startRound;
   document.getElementById("continueWrap").innerHTML = "";
   document.getElementById("continueWrap").appendChild(btn);
+
+  if(correct && streak === 30){
+    lastContinueLabelKey = "playAgain";
+    btn.textContent = t("playAgain");
+    btn.onclick = () => {
+      streak = 0;
+      localStorage.setItem("wpt_streak", streak);
+      document.getElementById("streakNum").textContent = streak;
+      hideMilestone();
+      startRound();
+    };
+    showMilestone({
+      image: "images/milestone-30-win.jpg",
+      text: ""
+    });
+  } else if(correct && streak === 15){
+    lastContinueLabelKey = "next";
+    btn.textContent = t("next");
+    btn.onclick = () => {
+      hideMilestone();
+      startRound();
+    };
+    showMilestone({
+      image: "images/milestone-15.jpg",
+      text: ""
+    });
+  } else {
+    lastContinueLabelKey = "next";
+    btn.textContent = t("next");
+    btn.onclick = startRound;
+  }
 }
 
+function showMilestone({image, text, buttonText, onClick, autoDismissMs}){
+  const overlay = document.getElementById("milestoneOverlay");
+  const img = document.getElementById("milestoneImg");
+  const textEl = document.getElementById("milestoneText");
+  const btnEl = document.getElementById("milestoneBtn");
+
+  // Snap back to the hidden-below-screen position instantly (no transition),
+  // so the next entrance always slides up from the bottom, not from wherever it exited to.
+  overlay.style.transition = "none";
+  overlay.classList.remove("show", "exit");
+  void overlay.offsetWidth; // force reflow
+  overlay.style.transition = "";
+
+  img.src = image;
+  img.alt = text || "Milestone reached";
+  textEl.textContent = text;
+  textEl.style.display = text ? "" : "none";
+
+  if(autoDismissMs){
+    btnEl.style.display = "none";
+    milestoneTimeoutId = setTimeout(onClick, autoDismissMs);
+  } else if(buttonText){
+    btnEl.style.display = "";
+    btnEl.textContent = buttonText;
+    btnEl.onclick = onClick;
+  } else {
+    btnEl.style.display = "none";
+  }
+
+  requestAnimationFrame(() => {
+    overlay.classList.add("show");
+  });
+}
+
+function hideMilestone(){
+  const overlay = document.getElementById("milestoneOverlay");
+  overlay.classList.remove("show");
+  overlay.classList.add("exit");
+}
+
+document.getElementById("langEnBtn").classList.toggle("active", currentLang === "en");
+document.getElementById("langUaBtn").classList.toggle("active", currentLang === "ua");
+applyStaticText();
 startRound();
 </script>
 
